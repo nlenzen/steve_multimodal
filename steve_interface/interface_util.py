@@ -17,12 +17,11 @@ from steve1.VPT.agent import ENV_KWARGS
 import sys
 import os
 
-# sys.path.append(os.getcwd() + '/src')
 sys.path.insert(0, os.getcwd())
 
-from src.source.load import load_model
-from src.source.preprocess import make_features
-from src.source.cvae.cvae import load_cvae
+from steve_multimodal.load import load_model
+from steve_multimodal.preprocess import make_features
+from steve_multimodal.cvae.cvae import load_cvae
 
 from minerl.herobraine.env_specs.human_survival_specs import HumanSurvival
 import minerl.herobraine.hero.handlers as handlers
