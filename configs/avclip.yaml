@@ -1,0 +1,25 @@
+# Projection
+video_projection: True
+final_activation: True
+proj_type: 'mapping'    # Type of projection in ['mapping' 'projection']
+embed_dim: 512
+hidden_dim: 1024
+num_layers: 10
+# Video
+vision_embed_dim: 512
+vision_resolution: 224
+vision_layers: 12
+vision_width: 768
+vision_patch_size: 16
+# Pooling params
+pooling: True
+pool_type: 'attn.d2.nh8.glusw'
+# Audio
+audio_label_dim: 527
+audio_fstride: 10
+audio_tstride: 10
+audio_input_fdim: 128
+audio_input_tdim: 1024
+# Base Parameters
+image_adapter_layers: 0
+video_seq_len: 32
