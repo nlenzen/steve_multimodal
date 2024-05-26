@@ -1,17 +1,18 @@
 # Imports
+import argparse
 import os
 import torch
 import torch.nn as nn
-import numpy as np
 from tqdm import tqdm
-
 from .load import load_model, save_model
-from .preprocess import make_features
+from dataloading.dataloader import EmbeddingLoader
+import time
 
 
 def train_model(model,
                 dataloader,
                 savepath,
+                device,
                 cfg_path=None,
                 param_path=None,
                 lr=0.00025,
@@ -24,7 +25,6 @@ def train_model(model,
     train_accuracies_video = []
     test_accuracies_audio = []
     test_accuracies_video = []
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     if isinstance(model, str):
         chkpt = torch.load(model, map_location=device)
@@ -54,8 +54,6 @@ def train_model(model,
         train_accuracies_audio = dic['train_accuracies_audio']
         test_accuracies_video = dic['test_accuracies_video']
         test_accuracies_audio = dic['test_accuracies_audio']
-        if 'scheduler' in dic.keys():
-            scheduler.load_state_dict(dic['scheduler'])
 
     for epoch in range(num_epochs):
         model.train()
@@ -68,7 +66,6 @@ def train_model(model,
 
             # Testing
             optimizer.step()
-            scheduler.step()
 
         # Evaluate epoch performance
         print("Average training loss: {}".format(sum(train_losses[-len(dataloader):]) / len(dataloader)))
@@ -86,18 +83,14 @@ def train_model(model,
                        train_losses, test_losses,
                        train_accuracies_video, train_accuracies_audio,
                        test_accuracies_video, test_accuracies_audio,
-                       last_epoch + epoch, savepath,
-                       scheduler)
+                       last_epoch + epoch, savepath)
 
     print("Done training saving model")
     save_model_params(model, optimizer,
                train_losses, test_losses,
                train_accuracies_video, train_accuracies_audio,
                test_accuracies_video, test_accuracies_audio,
-               last_epoch + num_epochs, savepath,
-               scheduler)
-
-    return model
+               last_epoch + num_epochs, savepath)
 
 
 def evaluate(model, dataloader, loss_fnc, test_size, num_tests, device):
@@ -205,8 +198,7 @@ def save_model_params(model,
                       test_accuracies_video,
                       test_accuracies_audio,
                       epoch,
-                      savepath,
-                      scheduler=None):
+                      savepath):
     dir_path = os.path.dirname(savepath)
     if not os.path.isdir(dir_path):
         os.makedirs(dir_path, exist_ok=True)
@@ -226,8 +218,35 @@ def save_model_params(model,
         'test_accuracies_audio': test_accuracies_audio,
         'test_accuracies_video': test_accuracies_video,
     }
-    if scheduler is not None:
-        dic['scheduler'] = scheduler.state_dict()
     # Save training parameters and model seperately
     torch.save(dic, param_path)
     save_model(model, savepath)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--train_data_path', type=str, default='datasets/train_dataset_avclip.npz')
+    parser.add_argument('--test_data_path', type=str, default='datasets/test_dataset_avclip.npz')
+    parser.add_argument('--model_path', type=str, default='checkpoints/base_avclip.pth')
+    parser.add_argument('--model_cfg', type=str, default='configs/avclip.yaml')
+    parser.add_argument('--savepath', type=str, default='checkpoints/avclip.pth')
+    parser.add_argument('--savepath_params', type=str, default='checkpoints/avclip_train_params.pth')
+    parser.add_argument('--batch_size', type=int, default=1024)
+    parser.add_argument('--lr', type=float, default=0.001)
+    parser.add_argument('--num_epochs', type=int, default=100)
+    args = parser.parse_args()
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    dataloader = EmbeddingLoader(args.batch_size, args.train_data_path, args.test_data_path)
+    print('Loaded {} training samples in {} batches'.format(dataloader.len_train_set(), dataloader.len_train_batches()))
+    start = time.time()
+    train_model(args.model_path,
+                dataloader,
+                args.savepath,
+                device,
+                cfg_path=args.model_cfg,
+                param_path=args.savepath_params,
+                lr=args.lr,
+                num_epochs=args.num_epochs)
+    end = time.time()
+    print('Time taken to train model: {}'.format(end - start))

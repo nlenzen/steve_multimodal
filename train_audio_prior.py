@@ -1,8 +1,11 @@
+import argparse
 import numpy as np
 import torch
+from torch.utils.data import DataLoader
 from tqdm import tqdm
 import copy
-from .cvae import save_vae
+from cvae.cvae import save_vae, load_cvae
+from dataloading.datasets import EmbeddingsDataset
 
 
 def train_step(model, audio_embeddings, visual_embeddings, optimizer, beta):
@@ -89,3 +92,29 @@ def train_cvae(model, train_dataloader, test_dataloader, savepath, lr, epochs, b
 
     print('Saving model...')
     save_vae(savepath, model)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--model_cfg', type=str, default='configs/audio_prior.yaml')
+    parser.add_argument('--train_data_path', type=str, default='datasets/train_dataset_prior.npz')
+    parser.add_argument('--test_data_path', type=str, default='datasets/test_dataset_prior.npz')
+    parser.add_argument('--savepath', type=str, default='checkpoints/audio_prior.pth')
+    parser.add_argument('--batch_size', type=int, default=2048)
+    parser.add_argument('--prefetch_factor', type=int, default=2)
+    parser.add_argument('--num_workers', type=int, default=2)
+    parser.add_argument('--num_epochs', type=int, default=500)
+    parser.add_argument('--beta', type=int, default=1)
+    parser.add_argument('--lr', type=float, default=1e-4)
+    args = parser.parse_args()
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model = load_cvae(args.model_cfg, device=device)
+
+    train_dataset = EmbeddingsDataset(args.train_data_path)
+    test_dataset = EmbeddingsDataset(args.test_data_path)
+
+    train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, prefetch_factor=args.prefetch_factor)
+    test_dataloader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers, prefetch_factor=args.prefetch_factor)
+
+    train_cvae(model, train_dataloader, test_dataloader, args.savepath, args.lr, args.num_epochs, args.beta)
