@@ -15,12 +15,15 @@ We recomend using python 3.10 when running this code.
 5. Run `pip install requirements.txt`
 6. All done!
 
-## Training the model
-### Downloading the datasets
+## Training the models
 
 ### Training the Audio-Video CLIP model
+1. Download the train dataset and the evaluation dataset andf place them inside the `datasets` directory.
+2. run `python train_avclip.py`
 
 ### Training the audio prior
+1. Download the train dataset and the evaluation dataset andf place them inside the `datasets` directory.
+2. run `python train_audio_prior.py`
 
 ## Generating gameplay video conditioned on audio
 The audio prompts used in our experiments can be found in the directory `audio_prompts`.
