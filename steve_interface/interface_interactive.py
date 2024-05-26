@@ -116,12 +116,12 @@ def run_interactive(clip_path, clip_cfg, in_model, in_weights, cond_scale, seed,
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--clip_path', type=str, default='checkpoints/model/avclip.pth')
-    parser.add_argument('--clip_cfg', type=str, default='src/configs/avclip.yaml')
+    parser.add_argument('--clip_path', type=str, default='steve_multimodal/checkpoints/avclip.pth')
+    parser.add_argument('--clip_cfg', type=str, default='steve_multimodal/configs/avclip.yaml')
     parser.add_argument('--in_model', type=str, default='STEVE-1/data/weights/vpt/2x.model')
     parser.add_argument('--in_weights', type=str, default='STEVE-1/data/weights/steve1/steve1.weights')
-    parser.add_argument('--prior_path', type=str, default='checkpoints/cvae/audio_prior.pth')
-    parser.add_argument('--prior_cfg', type=str, default='src/configs/cvae/audio_prior.yaml')
+    parser.add_argument('--prior_path', type=str, default='steve_multimodal/checkpoints/audio_prior.pth')
+    parser.add_argument('--prior_cfg', type=str, default='steve_multimodal/configs/audio_prior.yaml')
     parser.add_argument('--output_video_dirpath', type=str, default='videos/generated_videos/interactive_videos')
     parser.add_argument('--minecraft_seed', type=float, default=1337)  # None for random seed
     parser.add_argument('--cond_scale', type=float, default=6.0)

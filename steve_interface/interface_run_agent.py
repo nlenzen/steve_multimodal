@@ -63,17 +63,17 @@ def generate_audio_prompt_videos(prompt_embeds, in_model, in_weights, cond_scale
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--clip_path', type=str, default='checkpoints/model/avclip.pth')
-    parser.add_argument('--clip_cfg', type=str, default='src/configs/avclip.yaml')
+    parser.add_argument('--clip_path', type=str, default='steve_multimodal/checkpoints/avclip.pth')
+    parser.add_argument('--clip_cfg', type=str, default='steve_multimodal/configs/avclip.yaml')
     parser.add_argument('--in_model', type=str, default='STEVE-1/data/weights/vpt/2x.model')
     parser.add_argument('--in_weights', type=str, default='STEVE-1/data/weights/steve1/steve1.weights')
-    parser.add_argument('--prior_path', type=str, default='checkpoints/cvae/audio_prior.pth')
-    parser.add_argument('--prior_cfg', type=str, default='src/configs/cvae/audio_prior.yaml')
+    parser.add_argument('--prior_path', type=str, default='steve_multimodal/checkpoints/audio_prior.pth')
+    parser.add_argument('--prior_cfg', type=str, default='steve_multimodal/configs/audio_prior.yaml')
     parser.add_argument('--audio_cond_scale', type=float, default=6.0)
     parser.add_argument('--gameplay_length', type=int, default=3000)
     parser.add_argument('--seed', type=float, default=None)
-    parser.add_argument('--save_dirpath', type=str, default='videos/generated_videos/')
-    parser.add_argument('--custom_audio_path', type=str, default='datasets/audio_prompts')
+    parser.add_argument('--save_dirpath', type=str, default='generated_videos/')
+    parser.add_argument('--custom_audio_path', type=str, default='steve_multimodal/audio_prompts')
     args = parser.parse_args()
 
     if args.custom_audio_path is not None:
