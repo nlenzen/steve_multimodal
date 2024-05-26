@@ -23,8 +23,9 @@ We recomend using python 3.10 when running this code.
 ### Training the audio prior
 
 ## Generating gameplay video conditioned on audio
-1. In the parent_dir directory create a new directory using `mkdir audio_prompts`
-2. Place the audio prompts in the form of `.wav` files in this folder. For organization, the directory can have one layer of subdirectories in which the `.wav` files can be placed.
+The audio prompts used in our experiments can be found in the directory `audio_prompts`.
+1. To use you own audio prompts, place the them in the form of `.wav` files in this folder. For organization, the directory can have one layer of subdirectories in which the `.wav` files can be placed.
+2. Download the [Audio-Video CLIP weights](https://drive.google.com/file/d/14rUy8Szmu7frOgJsZMTv-D8Ajn_oLb4y/view?usp=sharing), as well as the [audio-prior weights](https://drive.google.com/file/d/13xOHhdqyjGvHM3yEMM3COJSnwhnO-m9H/view?usp=sharing) and place the inside the folder `checkpoints`.
 3. Start the generation by running `python steve_multimodal/steve_interfaces/interface_run_agent.py` inside `parent_dir`. This will generate a gameplay video for each audio prompt in the `audio_prompts` directory.
 
 4. To run an interactive session run `python steve_multimodal/steve_interfaces/interface_interactive.py` inside `parent_dir`. Here you can specify a path to an audio prompt by clicking inside the video window and entering it into the console.
